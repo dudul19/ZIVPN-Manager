@@ -103,7 +103,7 @@ sudo chmod +x /usr/local/bin/uninstall.sh
 # Pasang skrip pembersihan otomatis dan jadwalkan
 sudo wget -O /usr/local/bin/zivpn-cleanup.sh https://raw.githubusercontent.com/dudul19/ZIVPN-Manager/main/zivpn-cleanup.sh
 sudo chmod +x /usr/local/bin/zivpn-cleanup.sh
-sudo wget -O /usr/local/bin/zivpn-autobackup.sh https://raw.githubusercontent.com/Nizwarax/udp-zivpn/main/zivpn-autobackup.sh
+sudo wget -O /usr/local/bin/zivpn-autobackup.sh https://raw.githubusercontent.com/dudul19/ZIVPN-Manager/main/zivpn-autobackup.sh
 sudo chmod +x /usr/local/bin/zivpn-autobackup.sh
 # Jalankan setiap menit untuk penghapusan yang mendekati real-time
 sudo bash -c 'echo "* * * * * root /usr/local/bin/zivpn-cleanup.sh" > /etc/cron.d/zivpn-cleanup'
