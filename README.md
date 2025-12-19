@@ -32,11 +32,6 @@ Follow these steps to install and set up ZiVPN Manager:
 sudo wget -O /usr/local/bin/zi.sh https://raw.githubusercontent.com/dudul19/udp-zivpn/main/zi.sh && sudo chmod +x /usr/local/bin/zi.sh && sudo zi.sh
 ```
 
-### ARM64
-```
-sudo wget -O /usr/local/bin/zi2.sh https://raw.githubusercontent.com/dudul19/udp-zivpn/main/zi2.sh && sudo chmod +x /usr/local/bin/zi2.sh && sudo zi2.sh
-```
-
 #### Usage
 
 Here's how to use ZiVPN Manager:
