@@ -43,10 +43,10 @@ fi
 sudo systemctl stop zivpn.service > /dev/null 2>&1
 
 echo -e "Downloading UDP Service"
-sudo wget https://github.com/dudul19/ZIVPN-Manager/main/udp-zivpn-linux-amd64 -O /usr/local/bin/zivpn-bin
+sudo wget https://github.com/dudul19/ZIVPN-Manager/releases/download/udp-server-1.0/udp-zivpn-linux-amd64 -O /usr/local/bin/zivpn-bin
 sudo chmod +x /usr/local/bin/zivpn-bin
 sudo mkdir -p /etc/zivpn
-sudo wget https://raw.githubusercontent.com/dudul19/ZIVPN-Manager/main/config.json -O /etc/zivpn/config.json
+sudo wget https://raw.githubusercontent.com/dudul19/ZIVPN-Manager/ipuk/config.json -O /etc/zivpn/config.json
 
 echo "Generating cert files:"
 sudo openssl req -new -newkey rsa:4096 -days 365 -nodes -x509 -subj "/C=US/ST=California/L=Los Angeles/O=Example Corp/OU=IT Department/CN=zivpn" -keyout "/etc/zivpn/zivpn.key" -out "/etc/zivpn/zivpn.crt"
