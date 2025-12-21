@@ -1,12 +1,12 @@
 <div align="center">
 
-## `💤 ZIVPN Manager 🌟` 
+## `💤 ZiVPN Manager - Telegram Bot 🌟` 
 
 `made with 🤍 from Mr dudul`
 
 ---
 
-**ZIVPN Manager menyediakan instalasi, konfigurasi, dan pengelolaan layanan yang ramah pengguna untuk mengelola server UDP ZiVPN Anda secara efisien.**
+**ZiVPN Manager provides easy-to-use installation, configuration, and service management to efficiently manage your ZiVPN UDP server.**
 
 </div>
 
@@ -29,7 +29,7 @@ Follow these steps to install and set up ZiVPN Manager:
 wget -q https://raw.githubusercontent.com/dudul19/ZiVPN-Manager/main/install.sh && chmod +x install.sh && ./install.sh
 ```
 
-Configuration Installation
+### Configuration Installation
 - Domain: Wajib diisi untuk generate sertifikat SSL (contoh: vpn.domain.com).
 - API Key: Tekan Enter untuk auto-generate.
 - Telegram Bot (Opsional):
@@ -43,7 +43,7 @@ Configuration Installation
 If you want to remove Zivpn from your server, you can do so through the menu or by running the following command directly:
 
 ```bash
-wget -q https://raw.githubusercontent.com/AutoFTbot/ZiVPN/main/uninstall.sh && chmod +x uninstall.sh && ./uninstall.sh
+wget -q https://raw.githubusercontent.com/dudul19/ZiVPN-Manager/main/uninstall.sh && chmod +x uninstall.sh && ./uninstall.sh
 ```
 
 <div align="center">
