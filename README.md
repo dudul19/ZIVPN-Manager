@@ -6,7 +6,7 @@
 
 ---
 
-**ZiVPN Manager provides easy-to-use installation, configuration, and service management to efficiently manage your ZiVPN UDP server.**
+**ZiVPN Manager provides easy-to-use installation, configuration, and service management to efficiently manage your ZiVPN UDP server using Telegram Bot.**
 
 </div>
 
@@ -21,6 +21,8 @@ Some of this script's features:
 - A Linux based System ```VPS```
   - Ubuntu 18+ VPS with a public IP.
 - Root or sudo access for installation and configuration.
+- Telegram Bot create at @BotFather.
+- Domain
 
 #### Installation
 Follow these steps to install and set up ZiVPN Manager:
@@ -30,12 +32,12 @@ wget -q https://raw.githubusercontent.com/dudul19/ZiVPN-Manager/main/install.sh 
 ```
 
 ### Configuration Installation
-- Domain: Wajib diisi untuk generate sertifikat SSL (contoh: vpn.domain.com).
-- API Key: Tekan Enter untuk auto-generate.
-- Telegram Bot (Opsional):
+- Domain: Required to generate SSL certificate (ex: vpn.domain.com).
+- API Key: Press enter to auto-generate.
+- Telegram Bot:
   - Bot Token: Token dari @BotFather.
-  - Admin ID: ID Telegram Anda (cek di @userinfobot).
-  - Bot Type: Free atau Paid.
+  - Admin ID: Your Telegram ID (check @userinfobot).
+  - Bot Type: Free or Paid.
 
 
 #### Uninstall
