@@ -1,6 +1,6 @@
 <div align="center">
 
-## `💤 ZIVPN Manager 🌟` * ![Version](https://img.shields.io/badge/version-1.5-blue.svg)
+## `💤 ZIVPN Manager 🌟` 
 
 `made with 🤍 from Mr dudul`
 
@@ -13,9 +13,7 @@
 ### Features
 Some of this script's features:
 - Automatic Installation
-- Interactive Menu
-- Complete User Management
-- Automatic Cleanup
+- Telegram Bot Integration
 - Instant Removal
 - Uninstaller
 
@@ -27,21 +25,17 @@ Some of this script's features:
 #### Installation
 Follow these steps to install and set up ZiVPN Manager:
 
-#### AMD64 (x86_64)
 ```
-sudo wget -O /usr/local/bin/zi.sh https://raw.githubusercontent.com/dudul19/ZIVPN-Manager/main/zi.sh && sudo chmod +x /usr/local/bin/zi.sh && sudo zi.sh
+wget -q https://raw.githubusercontent.com/dudul19/ZiVPN-Manager/main/install.sh && chmod +x install.sh && ./install.sh
 ```
 
-#### Usage
-
-Here's how to use ZiVPN Manager:
-
-> After the installation is complete, you can access the management menu by running the following command:
-
-```
-zivpn
-```
-> From this menu, you can manage all your Zivpn service.
+Configuration Installation
+- Domain: Wajib diisi untuk generate sertifikat SSL (contoh: vpn.domain.com).
+- API Key: Tekan Enter untuk auto-generate.
+- Telegram Bot (Opsional):
+  - Bot Token: Token dari @BotFather.
+  - Admin ID: ID Telegram Anda (cek di @userinfobot).
+  - Bot Type: Free atau Paid.
 
 
 #### Uninstall
@@ -49,27 +43,8 @@ zivpn
 If you want to remove Zivpn from your server, you can do so through the menu or by running the following command directly:
 
 ```bash
-uninstall.sh
+wget -q https://raw.githubusercontent.com/AutoFTbot/ZiVPN/main/uninstall.sh && chmod +x uninstall.sh && ./uninstall.sh
 ```
-
-#### Menu
-- Add Regular Account
-- Add Trial Account
-- List Account
-- Delete Account
-- Edit Expiry Date
-- Edit Password
-- VPS Info
-- Full Backup/Restore
-- Bot Notification
-- Change Theme
-- Uninstall ZIVPN
-
-
-#### Credit
-
- > - zi owners
- > - [MrDudul](https://t.me/dudulrealnofek)
 
 <div align="center">
 
