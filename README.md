@@ -28,7 +28,7 @@ Some of this script's features:
 Follow these steps to install and set up ZiVPN Manager:
 
 ```
-wget -q https://raw.githubusercontent.com/dudul19/ZiVPN-Manager/main/install.sh && chmod +x install.sh && ./install.sh
+wget -q https://raw.githubusercontent.com/dudul19/zivpn-manager/main/install.sh && chmod +x install.sh && ./install.sh
 ```
 
 ### Configuration Installation
@@ -45,7 +45,7 @@ wget -q https://raw.githubusercontent.com/dudul19/ZiVPN-Manager/main/install.sh 
 If you want to remove Zivpn from your server, you can do so through the menu or by running the following command directly:
 
 ```bash
-wget -q https://raw.githubusercontent.com/dudul19/ZiVPN-Manager/main/uninstall.sh && chmod +x uninstall.sh && ./uninstall.sh
+wget -q https://raw.githubusercontent.com/dudul19/zivpn-manager/main/uninstall.sh && chmod +x uninstall.sh && ./uninstall.sh
 ```
 
 <div align="center">
