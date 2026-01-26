@@ -1,0 +1,360 @@
+#!/bin/bash
+
+# ==========================================
+# Colors & Styles
+# ==========================================
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+CYAN='\033[0;36m'
+YELLOW='\033[0;33m'
+BLUE='\033[0;34m'
+PURPLE='\033[0;35m'
+RESET='\033[0m'
+NC='\033[0m'
+BOLD='\033[1m'
+
+# ==========================================
+# Configuration Paths
+# ==========================================
+DIR_CONFIG="/etc/zivpn"
+FILE_API_PORT="$DIR_CONFIG/port"
+FILE_API_KEY="$DIR_CONFIG/apikey"
+FILE_BOT_CONFIG="$DIR_CONFIG/bot-config.json"
+FILE_DOMAIN="$DIR_CONFIG/domain"
+
+# ==========================================
+# Load Config
+# ==========================================
+if [[ -f "$FILE_API_PORT" ]]; then
+    API_PORT=$(cat "$FILE_API_PORT")
+else
+    API_PORT="8080" # Fallback
+fi
+
+if [[ -f "$FILE_API_KEY" ]]; then
+    API_KEY=$(cat "$FILE_API_KEY")
+else
+    API_KEY="AutoFtBot-default"
+fi
+
+if [[ -f "$FILE_DOMAIN" ]]; then
+    DOMAIN=$(cat "$FILE_DOMAIN")
+else
+    DOMAIN="Undetected"
+fi
+
+API_URL="http://127.0.0.1:${API_PORT}/api"
+
+# ==========================================
+# UI Helper Functions
+# ==========================================
+
+function line() {
+    echo -e "${GREEN}========================================================${RESET}"
+}
+
+function thin_line() {
+    echo -e "${CYAN}--------------------------------------------------------${RESET}"
+}
+
+function banner() {
+    clear
+    line
+    echo -e "${YELLOW}${BOLD}                    ZIVPN MANAGER                 ${RESET}"
+    echo -e "${CYAN}                 t.me/dudulrealnofek                 ${RESET}"
+    line
+    
+    # Status Check
+    if systemctl is-active --quiet zivpn-bot; then
+        STATUS="${GREEN}RUNNING${RESET}"
+    else
+        STATUS="${RED}STOPPED${RESET}"
+    fi
+    
+    echo -e "   Domain  : ${YELLOW}$DOMAIN${RESET}"
+    echo -e "   Status  : $STATUS"
+    echo -e "   API Port: $API_PORT"
+    line
+}
+
+function pause() {
+    echo -e ""
+    read -n 1 -s -r -p "Press [Enter] to return to menu..."
+    main_menu
+}
+
+function msg_success() {
+    echo -e "${GREEN}[OK] $1${RESET}"
+}
+
+function msg_error() {
+    echo -e "${RED}[ERROR] $1${RESET}"
+}
+
+function msg_wait() {
+    echo -e "${YELLOW}[WAIT] Processing...${RESET}"
+}
+
+# ==========================================
+# API Functions
+# ==========================================
+
+function create_user() {
+    banner
+    echo -e "${PURPLE}Create New VPN User${RESET}"
+    thin_line
+    read -p "   > Username : " username
+    read -p "   > Duration (Days) : " days
+    thin_line
+    
+    msg_wait
+    RESPONSE=$(curl -s -X POST "$API_URL/user/create" \
+        -H "Content-Type: application/json" \
+        -H "X-API-Key: $API_KEY" \
+        -d "{\"password\": \"$username\", \"days\": $days}")
+
+    SUCCESS=$(echo $RESPONSE | jq -r '.success')
+    MESSAGE=$(echo $RESPONSE | jq -r '.message')
+
+    if [[ "$SUCCESS" == "true" ]]; then
+        DATA=$(echo $RESPONSE | jq -r '.data')
+        EXP=$(echo $DATA | jq -r '.expired')
+        echo -e ""
+        line
+        echo -e "   ${GREEN}USER CREATED SUCCESSFULLY${RESET}"
+        line
+        echo -e "   Username : ${YELLOW}$username${RESET}"
+        echo -e "   Expired  : ${YELLOW}$EXP${RESET}"
+        echo -e "   Limit IP : ${YELLOW}Auto${RESET}"
+        line
+    else
+        echo -e ""
+        msg_error "$MESSAGE"
+    fi
+    pause
+}
+
+function delete_user() {
+    banner
+    echo -e "${PURPLE}Delete VPN User${RESET}"
+    thin_line
+    read -p "   > Username to delete : " username
+    thin_line
+
+    msg_wait
+    RESPONSE=$(curl -s -X POST "$API_URL/user/delete" \
+        -H "Content-Type: application/json" \
+        -H "X-API-Key: $API_KEY" \
+        -d "{\"password\": \"$username\"}")
+
+    SUCCESS=$(echo $RESPONSE | jq -r '.success')
+    MESSAGE=$(echo $RESPONSE | jq -r '.message')
+
+    if [[ "$SUCCESS" == "true" ]]; then
+        msg_success "User '$username' has been deleted."
+    else
+        msg_error "$MESSAGE"
+    fi
+    pause
+}
+
+function renew_user() {
+    banner
+    echo -e "${PURPLE}Renew VPN User${RESET}"
+    thin_line
+    read -p "   > Username to renew : " username
+    read -p "   > Add Duration (Days) : " days
+    thin_line
+
+    msg_wait
+    RESPONSE=$(curl -s -X POST "$API_URL/user/renew" \
+        -H "Content-Type: application/json" \
+        -H "X-API-Key: $API_KEY" \
+        -d "{\"password\": \"$username\", \"days\": $days}")
+
+    SUCCESS=$(echo $RESPONSE | jq -r '.success')
+    MESSAGE=$(echo $RESPONSE | jq -r '.message')
+
+    if [[ "$SUCCESS" == "true" ]]; then
+        EXP=$(echo $RESPONSE | jq -r '.data.expired')
+        msg_success "User renewed successfully."
+        echo -e "New Expiry Date: ${YELLOW}$EXP${RESET}"
+    else
+        msg_error "$MESSAGE"
+    fi
+    pause
+}
+
+function list_users() {
+    banner
+    echo -e "${PURPLE}List All Users${RESET}"
+    msg_wait
+    
+    RESPONSE=$(curl -s -X GET "$API_URL/users" \
+        -H "X-API-Key: $API_KEY")
+
+    clear
+    line
+    echo -e "                   LIST USER VPN                        "
+    line
+    printf "${CYAN}%-4s %-20s %-18s %-10s${RESET}\n" "NO" "USERNAME" "EXPIRED" "STATUS"
+    thin_line
+    
+    # Parse JSON and format as table
+    count=1
+    echo $RESPONSE | jq -r '.data[] | "\(.password) \(.expired) \(.status)"' | while read user exp status; do
+        if [[ "$status" == "Expired" ]]; then
+            COLOR="${RED}"
+            ICON="🔴"
+        else
+            COLOR="${GREEN}"
+            ICON="🟢"
+        fi
+        printf "${RESET}%-4s ${YELLOW}%-20s ${RESET}%-18s ${COLOR}%-10s${RESET}\n" "$count" "$user" "$exp" "$ICON $status"
+        ((count++))
+    done
+    line
+    echo -e " Total users shown above."
+    pause
+}
+
+# ==========================================
+# Config Functions
+# ==========================================
+
+function edit_bot_config() {
+    banner
+    echo -e "${PURPLE}Edit Configuration${RESET}"
+    thin_line
+    
+    if [[ ! -f "$FILE_BOT_CONFIG" ]]; then
+        msg_error "Config file not found!"
+        pause
+        return
+    fi
+
+    CUR_TOKEN=$(jq -r '.bot_token' $FILE_BOT_CONFIG)
+    CUR_ADMIN=$(jq -r '.admin_id' $FILE_BOT_CONFIG)
+    CUR_MODE=$(jq -r '.mode' $FILE_BOT_CONFIG)
+
+    echo -e " 1) Bot Token : ${CYAN}${CUR_TOKEN:0:15}...${RESET}"
+    echo -e " 2) Admin ID  : ${CYAN}$CUR_ADMIN${RESET}"
+    echo -e " 3) Mode      : ${CYAN}$CUR_MODE${RESET}"
+    thin_line
+    echo -e " x) Cancel"
+    thin_line
+    read -p " Choose Option : " opt
+
+    case $opt in
+        1)
+            read -p " New Bot Token: " new_token
+            tmp=$(mktemp)
+            jq --arg v "$new_token" '.bot_token = $v' $FILE_BOT_CONFIG > "$tmp" && mv "$tmp" $FILE_BOT_CONFIG
+            msg_success "Token updated! Restart bot to apply."
+            ;;
+        2)
+            read -p " New Admin ID: " new_admin
+            tmp=$(mktemp)
+            jq --argjson v "$new_admin" '.admin_id = $v' $FILE_BOT_CONFIG > "$tmp" && mv "$tmp" $FILE_BOT_CONFIG
+            msg_success "Admin ID updated! Restart bot to apply."
+            ;;
+        3)
+            if [[ "$CUR_MODE" == "public" ]]; then NEW="private"; else NEW="public"; fi
+            tmp=$(mktemp)
+            jq --arg v "$NEW" '.mode = $v' $FILE_BOT_CONFIG > "$tmp" && mv "$tmp" $FILE_BOT_CONFIG
+            msg_success "Mode switched to: $NEW"
+            ;;
+        x)
+            main_menu
+            ;;
+    esac
+    pause
+}
+
+function bot_service_control() {
+    banner
+    echo -e "${PURPLE}Service Control${RESET}"
+    thin_line
+    echo -e " 1) ${GREEN}START${RESET} / ${YELLOW}RESTART${RESET} Bot Service"
+    echo -e " 2) ${RED}STOP${RESET} Bot Service"
+    echo -e " 3) View Service Logs"
+    thin_line
+    read -p " Select : " svc_opt
+
+    case $svc_opt in
+        1)
+            msg_wait
+            systemctl restart zivpn-bot
+            msg_success "Bot service restarted."
+            ;;
+        2)
+            msg_wait
+            systemctl stop zivpn-bot
+            msg_success "Bot service stopped."
+            ;;
+        3)
+            clear
+            journalctl -u zivpn-bot -n 20 --no-pager
+            echo ""
+            read -p "Press Enter to continue..."
+            ;;
+    esac
+    pause
+}
+
+function backup_data() {
+    banner
+    echo -e "${PURPLE}System Backup${RESET}"
+    msg_wait
+    
+    DATE=$(date +%Y%m%d-%H%M%S)
+    BACKUP_FILE="/root/zivpn-backup-$DATE.zip"
+    
+    zip -r "$BACKUP_FILE" /etc/zivpn/config.json /etc/zivpn/users.json /etc/zivpn/domain /etc/zivpn/bot-config.json > /dev/null 2>&1
+    
+    if [[ -f "$BACKUP_FILE" ]]; then
+        echo -e ""
+        line
+        echo -e "${GREEN}BACKUP SUCCESSFUL${RESET}"
+        line
+        echo -e " Location : $BACKUP_FILE"
+        echo -e " Size     : $(du -h $BACKUP_FILE | awk '{print $1}')"
+        line
+    else
+        msg_error "Backup failed."
+    fi
+    pause
+}
+
+# ==========================================
+# Main Menu
+# ==========================================
+function main_menu() {
+    banner
+    echo -e "${BOLD}USER MANAGEMENT${RESET}"
+    echo -e "  ${CYAN}[1]${RESET}  Create User            ${CYAN}[3]${RESET}  Renew User"
+    echo -e "  ${CYAN}[2]${RESET}  Delete User            ${CYAN}[4]${RESET}  List Users"
+    echo -e ""
+    echo -e "${BOLD}BOT SETTINGS${RESET}"
+    echo -e "  ${CYAN}[5]${RESET}  Bot Configuration      ${CYAN}[6]${RESET}  Service Control"
+    echo -e ""
+    echo -e "${BOLD}SYSTEM${RESET}"
+    echo -e "  ${CYAN}[7]${RESET}  Backup Data            ${CYAN}[x]${RESET}  Exit"
+    line
+    read -p " Select Menu : " menu_opt
+
+    case $menu_opt in
+        1) create_user ;;
+        2) delete_user ;;
+        3) renew_user ;;
+        4) list_users ;;
+        5) edit_bot_config ;;
+        6) bot_service_control ;;
+        7) backup_data ;;
+        x) clear; exit 0 ;;
+        *) echo -e "${RED}Invalid Option${RESET}"; sleep 1; main_menu ;;
+    esac
+}
+
+# Start
+main_menu
